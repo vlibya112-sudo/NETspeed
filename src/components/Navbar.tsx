@@ -12,6 +12,7 @@ interface NavbarProps {
   currentTheme: ColorTheme;
   customAccent: string | null;
   onOpenThemeModal: () => void;
+  onOpenAIDiagnostics?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -23,7 +24,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleDarkMode,
   currentTheme,
   customAccent,
-  onOpenThemeModal
+  onOpenThemeModal,
+  onOpenAIDiagnostics
 }) => {
   const accentColor = customAccent || currentTheme.accent;
 
@@ -137,8 +139,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* Right Actions: Color Theme Selector + AdSense Blueprint Toggle & Dark mode switch */}
+        {/* Right Actions: AI Diagnosis + Color Theme Selector + AdSense Blueprint Toggle & Dark mode switch */}
         <div className="flex items-center gap-2">
+          {/* Gemini AI Diagnostics Button */}
+          {onOpenAIDiagnostics && (
+            <button
+              id="btn-nav-open-ai"
+              onClick={onOpenAIDiagnostics}
+              title="محلل الاتصال والشبكة الذكي عبر Gemini"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
+              <span className="hidden sm:inline">محلل Gemini</span>
+            </button>
+          )}
+
           {/* Color Palette Picker Button */}
           <button
             id="btn-open-color-theme"

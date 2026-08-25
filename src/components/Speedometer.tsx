@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, RotateCcw, Activity, ArrowDown, ArrowUp, Zap, Server, ShieldCheck, MapPin, Gauge } from 'lucide-react';
+import { Play, RotateCcw, Activity, ArrowDown, ArrowUp, Zap, Server, ShieldCheck, MapPin, Gauge, Sparkles } from 'lucide-react';
 import { TestPhase, SpeedResult, ServerLocation, ColorTheme } from '../types';
 import { SERVERS } from '../data/mockData';
 
@@ -12,6 +12,7 @@ interface SpeedometerProps {
   onSelectServer: (server: ServerLocation) => void;
   onStartTest: () => void;
   onCancelTest: () => void;
+  onOpenAIDiagnostics?: () => void;
   currentTheme?: ColorTheme;
   customAccent?: string | null;
 }
@@ -24,6 +25,7 @@ export const Speedometer: React.FC<SpeedometerProps> = ({
   onSelectServer,
   onStartTest,
   onCancelTest,
+  onOpenAIDiagnostics,
   currentTheme,
   customAccent
 }) => {
@@ -199,24 +201,37 @@ export const Speedometer: React.FC<SpeedometerProps> = ({
         </div>
       </div>
 
-      {/* Action Button: Start / Cancel */}
-      <div className="mt-4 mb-6 z-10">
+      {/* Action Button: Start / Cancel & AI Diagnostics */}
+      <div className="mt-4 mb-6 z-10 flex flex-wrap items-center justify-center gap-3">
         {!isTesting ? (
-          <button
-            id="btn-start-speedtest"
-            onClick={onStartTest}
-            className="group relative inline-flex items-center justify-center gap-3 px-10 py-4 text-lg font-bold text-white transition-all duration-300 rounded-2xl shadow-lg hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            style={{
-              background: `linear-gradient(135deg, ${customAccent || currentTheme?.gradientFrom || '#06b6d4'}, ${currentTheme?.gradientTo || '#6366f1'})`,
-              boxShadow: `0 10px 25px -5px ${accentColor}40`
-            }}
-          >
-            <Play className="w-6 h-6 fill-white group-hover:animate-pulse" />
-            <span>{phase === 'complete' ? 'إعادة الفحص الآن' : 'ابدأ فحص السرعة'}</span>
-            <span className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold bg-amber-400 text-slate-900 rounded-full shadow-xs">
-              مجاني 100%
-            </span>
-          </button>
+          <>
+            <button
+              id="btn-start-speedtest"
+              onClick={onStartTest}
+              className="group relative inline-flex items-center justify-center gap-3 px-10 py-4 text-lg font-bold text-white transition-all duration-300 rounded-2xl shadow-lg hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              style={{
+                background: `linear-gradient(135deg, ${customAccent || currentTheme?.gradientFrom || '#06b6d4'}, ${currentTheme?.gradientTo || '#6366f1'})`,
+                boxShadow: `0 10px 25px -5px ${accentColor}40`
+              }}
+            >
+              <Play className="w-6 h-6 fill-white group-hover:animate-pulse" />
+              <span>{phase === 'complete' ? 'إعادة الفحص الآن' : 'ابدأ فحص السرعة'}</span>
+              <span className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold bg-amber-400 text-slate-900 rounded-full shadow-xs">
+                مجاني 100%
+              </span>
+            </button>
+
+            {onOpenAIDiagnostics && (
+              <button
+                id="btn-open-ai-diagnostics"
+                onClick={onOpenAIDiagnostics}
+                className="inline-flex items-center gap-2 px-5 py-4 text-sm font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition shadow-xs cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
+                <span>تحليل الذكاء الاصطناعي (Gemini)</span>
+              </button>
+            )}
+          </>
         ) : (
           <button
             id="btn-cancel-speedtest"

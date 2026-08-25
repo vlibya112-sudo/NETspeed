@@ -17,7 +17,8 @@ import {
   Zap, 
   History, 
   Trash2, 
-  Share2 
+  Share2,
+  Gamepad2 
 } from 'lucide-react';
 
 import { TestPhase, SpeedResult, ServerLocation, ColorThemeId } from './types';
@@ -34,7 +35,8 @@ import { SEOLandingPages } from './components/SEOLandingPages';
 import { TechnicalFeasibilityStudy } from './components/TechnicalFeasibilityStudy';
 import { SpeedCertificate } from './components/SpeedCertificate';
 import { ThemePickerModal } from './components/ThemePickerModal';
-import { Palette, Sparkles as SparklesIcon, Check } from 'lucide-react';
+import { AIDiagnosticModal } from './components/AIDiagnosticModal';
+import { Palette, Sparkles as SparklesIcon, Check, Bot } from 'lucide-react';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'test' | 'dwell' | 'adsense' | 'seo' | 'study'>('test');
@@ -45,6 +47,7 @@ export default function App() {
   const [themeId, setThemeId] = useState<ColorThemeId>('cyan');
   const [customAccent, setCustomAccent] = useState<string | null>(null);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
+  const [isAIDiagnosticsOpen, setIsAIDiagnosticsOpen] = useState<boolean>(false);
 
   // Speed test engine state
   const [phase, setPhase] = useState<TestPhase>('idle');
@@ -185,6 +188,7 @@ export default function App() {
         currentTheme={currentTheme}
         customAccent={customAccent}
         onOpenThemeModal={() => setIsThemeModalOpen(true)}
+        onOpenAIDiagnostics={() => setIsAIDiagnosticsOpen(true)}
       />
 
       {/* Blueprint Mode Active Banner notification */}
@@ -274,6 +278,7 @@ export default function App() {
                 onSelectServer={setSelectedServer}
                 onStartTest={handleStartTest}
                 onCancelTest={handleCancelTest}
+                onOpenAIDiagnostics={() => setIsAIDiagnosticsOpen(true)}
                 currentTheme={currentTheme}
                 customAccent={customAccent}
               />
@@ -286,9 +291,18 @@ export default function App() {
                 />
               </div>
 
-              {/* Action Bar when test completes: Certificate & Details */}
+              {/* Action Bar when test completes: Certificate & Details & Gemini AI */}
               {phase === 'complete' && lastResult && (
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in">
+                  <button
+                    id="btn-open-ai-analysis-completed"
+                    onClick={() => setIsAIDiagnosticsOpen(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                    <span>تحليل الخط بالذكاء الاصطناعي (Gemini)</span>
+                  </button>
+
                   <button
                     id="btn-open-certificate"
                     onClick={() => setShowCertificate(true)}
@@ -303,7 +317,7 @@ export default function App() {
                     onClick={() => setCurrentView('dwell')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs hover:bg-black transition cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <Gamepad2 className="w-4 h-4 text-cyan-400" />
                     <span>فحص توافق خطك لألعاب ببجي وفيفا و 4K</span>
                   </button>
                 </div>
@@ -418,6 +432,15 @@ export default function App() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
         isOpen={isThemeModalOpen}
         onClose={() => setIsThemeModalOpen(false)}
+      />
+
+      {/* AI Network Diagnostics Modal (Gemini 3.7) */}
+      <AIDiagnosticModal
+        isOpen={isAIDiagnosticsOpen}
+        onClose={() => setIsAIDiagnosticsOpen(false)}
+        result={lastResult}
+        server={selectedServer}
+        accentColor={accentColor}
       />
 
       {/* Compliant Sticky Anchor Ad Container */}
