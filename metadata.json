@@ -1,0 +1,6 @@
+{
+  "name": "NetSpeed Pro - منصة قياس السرعة وخطة العمل وAdSense",
+  "description": "منصة قياس سرعة إنترنت سريعة ودقيقة مع دراسة جدوى تقنية وتجارية، خريطة توزيع إعلانات AdSense، وأدوات مضاعفة وقت البقاء، ومعمارية سيو عربية وعالمية متقدمة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
