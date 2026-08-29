@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   Gauge, 
-  Sparkles, 
+  Circle,
   DollarSign, 
   Search, 
   BookOpen, 
