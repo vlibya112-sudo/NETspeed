@@ -86,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               color: currentView === 'dwell' ? accentColor : undefined
             }}
           >
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Circle className="w-4 h-4 text-amber-500" />
             <span>أدوات الألعاب والمزودين</span>
           </button>
 
