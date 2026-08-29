@@ -299,7 +299,7 @@ export default function App() {
                     onClick={() => setIsAIDiagnosticsOpen(true)}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                    <Circle className="w-4 h-4 text-amber-300 animate-pulse" />
                     <span>تحليل الخط بالذكاء الاصطناعي (Gemini)</span>
                   </button>
 
