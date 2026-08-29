@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-  Gauge, 
+import {
+  Gauge,
   Circle,
   DollarSign, 
   Search, 
