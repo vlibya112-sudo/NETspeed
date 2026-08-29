@@ -36,7 +36,8 @@ import { TechnicalFeasibilityStudy } from './components/TechnicalFeasibilityStud
 import { SpeedCertificate } from './components/SpeedCertificate';
 import { ThemePickerModal } from './components/ThemePickerModal';
 import { AIDiagnosticModal } from './components/AIDiagnosticModal';
-import { Palette, Sparkles as SparklesIcon, Check, Bot } from 'lucide-react';
+import { Palette, Check, Bot } from 'lucide-react';
+
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'test' | 'dwell' | 'adsense' | 'seo' | 'study'>('test');
