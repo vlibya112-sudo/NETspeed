@@ -3,23 +3,24 @@ import confetti from 'canvas-confetti';
 import {
   Gauge,
   Circle,
-  DollarSign, 
-  Search, 
-  BookOpen, 
-  Award, 
-  Layers, 
-  ShieldCheck, 
-  X, 
-  TrendingUp, 
-  ArrowDown, 
-  ArrowUp, 
-  Activity, 
-  Zap, 
-  History, 
-  Trash2, 
+  DollarSign,
+  Search,
+  BookOpen,
+  Award,
+  Layers,
+  ShieldCheck,
+  X,
+  TrendingUp,
+  ArrowDown,
+  ArrowUp,
+  Activity,
+  Zap,
+  History,
+  Trash2,
   Share2,
-  Gamepad2 
+  Gamepad2
 } from 'lucide-react';
+
 
 import { TestPhase, SpeedResult, ServerLocation, ColorThemeId } from './types';
 import { SERVERS, ADSENSE_BLUEPRINT } from './data/mockData';
