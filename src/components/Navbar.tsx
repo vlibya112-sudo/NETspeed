@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gauge, Sparkles, DollarSign, Search, BookOpen, Sun, Moon, Layers, Palette } from 'lucide-react';
+import { Gauge, Circle, DollarSign, Search, BookOpen, Sun, Moon, Layers, Palette } from 'lucide-react';
 import { ColorTheme } from '../types';
 
 interface NavbarProps {
