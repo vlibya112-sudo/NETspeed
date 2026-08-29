@@ -149,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="محلل الاتصال والشبكة الذكي عبر Gemini"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
+              <Circle className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
               <span className="hidden sm:inline">محلل Gemini</span>
             </button>
           )}
