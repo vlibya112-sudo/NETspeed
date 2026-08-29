@@ -458,7 +458,7 @@ export default function App() {
               <span className="text-emerald-600 font-bold">RPM ~$8.50</span>
             </div>
             <div className="flex items-center justify-center h-10 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-500 ml-1.5" />
+              <Circle className="w-3.5 h-3.5 text-cyan-500 ml-1.5" />
               <span>مساحة إعلانات جوجل أدسنس السفلية المتجاوبة (Anchor Unit)</span>
             </div>
           </div>
