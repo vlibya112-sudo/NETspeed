@@ -21,12 +21,11 @@ import {
   Gamepad2
 } from 'lucide-react';
 
-
 import { TestPhase, SpeedResult, ServerLocation, ColorThemeId } from './types';
 import { SERVERS, ADSENSE_BLUEPRINT } from './data/mockData';
 import { COLOR_THEMES } from './data/themes';
 import { SpeedEngine } from './utils/speedEngine';
-import { Navbar } from './components/Navbar';
+import { NavBar } from './components/NavBar';
 import { Footer } from './components/Footer';
 import { Speedometer } from './components/Speedometer';
 import { AdSenseBanner } from './components/AdSenseBanner';
@@ -39,12 +38,11 @@ import { ThemePickerModal } from './components/ThemePickerModal';
 import { AIDiagnosticModal } from './components/AIDiagnosticModal';
 import { Palette, Check, Bot } from 'lucide-react';
 
-
 export default function App() {
   const [currentView, setCurrentView] = useState<'test' | 'dwell' | 'adsense' | 'seo' | 'study'>('test');
   const [blueprintMode, setBlueprintMode] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  
+
   // Theme state
   const [themeId, setThemeId] = useState<ColorThemeId>('cyan');
   const [customAccent, setCustomAccent] = useState<string | null>(null);
@@ -60,10 +58,11 @@ export default function App() {
     upload: 0,
     ping: 0,
     jitter: 0,
-    isp: 'الاتصالات المتنقلة (5G Edge)',
+    isp: 'الاتصالات الإفريقية (5G Edge)',
     ip: '176.44.82.119',
     bufferbloatScore: 'A+'
   });
+
   const [selectedServer, setSelectedServer] = useState<ServerLocation>(SERVERS[0]);
   const [lastResult, setLastResult] = useState<SpeedResult | null>(null);
   const [showCertificate, setShowCertificate] = useState<boolean>(false);
@@ -74,7 +73,6 @@ export default function App() {
 
   useEffect(() => {
     engineRef.current = new SpeedEngine();
-    // Load local history if available
     try {
       const saved = localStorage.getItem('speed_test_history');
       if (saved) {
@@ -88,9 +86,10 @@ export default function App() {
       if (savedCustom) {
         setCustomAccent(savedCustom);
       }
-    } catch {}
+    } catch () {}
+  }, []);
 
-    // Apply dark mode class to html
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -102,7 +101,7 @@ export default function App() {
     setThemeId(newThemeId);
     try {
       localStorage.setItem('netspeed_theme_id', newThemeId);
-    } catch {}
+    } catch () {}
   };
 
   const handleSelectCustomAccent = (accent: string | null) => {
@@ -113,16 +112,16 @@ export default function App() {
       } else {
         localStorage.removeItem('netspeed_custom_accent');
       }
-    } catch {}
+    } catch () {}
   };
 
   const handleStartTest = async () => {
-    if (!engineRef.current) return;
+    if (engineRef.current?.isRunning) return;
     setPhase('ping');
     setCurrentSpeed(0);
     setProgress(0);
 
-    const result = await engineRef.current.runFullTest(
+    const result = await engineRef.current?.runFullTest(
       selectedServer,
       (newPhase, speed, currentProg, currentStats) => {
         setPhase(newPhase);
@@ -132,23 +131,24 @@ export default function App() {
       }
     );
 
-    setLastResult(result);
-    setTestHistory(prev => {
-      const updated = [result, ...prev].slice(0, 10);
-      try {
-        localStorage.setItem('speed_test_history', JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
-
-    // Trigger celebratory confetti on high speed results
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
+    if (result) {
+      setLastResult(result);
+      setTestHistory((prev) => {
+        const updated = [result, ...prev].slice(0, 10);
+        try {
+          localStorage.setItem('speed_test_history', JSON.stringify(updated));
+        } catch () {}
+        return updated;
       });
-    } catch {}
+
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch () {}
+    }
   };
 
   const handleCancelTest = () => {
@@ -164,22 +164,20 @@ export default function App() {
     setTestHistory([]);
     try {
       localStorage.removeItem('speed_test_history');
-    } catch {}
+    } catch () {}
   };
 
-  // Find specific Ad configs
-  const topAdUnit = ADSENSE_BLUEPRINT.find(a => a.id === 'top-leaderboard') || ADSENSE_BLUEPRINT[0];
-  const underGaugeAdUnit = ADSENSE_BLUEPRINT.find(a => a.id === 'under-speedometer') || ADSENSE_BLUEPRINT[1];
-  const nativeInFeedAdUnit = ADSENSE_BLUEPRINT.find(a => a.id === 'post-result-native') || ADSENSE_BLUEPRINT[2];
-  const stickyAnchorAdUnit = ADSENSE_BLUEPRINT.find(a => a.id === 'sticky-footer-anchor') || ADSENSE_BLUEPRINT[3];
-  const sidebarAdUnit = ADSENSE_BLUEPRINT.find(a => a.id === 'sidebar-halfpage') || ADSENSE_BLUEPRINT[4];
+  const topAdUnit = ADSENSE_BLUEPRINT.find((a) => a.id === 'top-leaderboard') || ADSENSE_BLUEPRINT[0];
+  const underGaugeAdUnit = ADSENSE_BLUEPRINT.find((a) => a.id === 'under-speedometer') || ADSENSE_BLUEPRINT[1];
+  const nativeInFeedAdUnit = ADSENSE_BLUEPRINT.find((a) => a.id === 'post-result-native') || ADSENSE_BLUEPRINT[2];
+  const stickyAnchorAdUnit = ADSENSE_BLUEPRINT.find((a) => a.id === 'sticky-footer-anchor') || ADSENSE_BLUEPRINT[3];
+  const sideBarAdUnit = ADSENSE_BLUEPRINT.find((a) => a.id === 'sidebar-halfpage') || ADSENSE_BLUEPRINT[4];
 
   const currentTheme = COLOR_THEMES[themeId] || COLOR_THEMES.cyan;
   const accentColor = customAccent || currentTheme.accent;
 
   return (
     <div className={`min-h-screen font-sans bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors ${darkMode ? 'dark' : ''} pb-20`} dir="rtl">
-      {/* Top Navbar */}
       <Navbar
         currentView={currentView}
         onSelectView={setCurrentView}
@@ -193,25 +191,23 @@ export default function App() {
         onOpenAIDiagnostics={() => setIsAIDiagnosticsOpen(true)}
       />
 
-      {/* Blueprint Mode Active Banner notification */}
       {blueprintMode && (
         <div className="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white px-4 py-2 text-xs font-bold shadow-md flex items-center justify-between">
           <div className="max-w-7xl mx-auto flex items-center gap-2">
             <Layers className="w-4 h-4 animate-bounce" />
             <span>
-              <strong>وضع دراسة وتوزيع إعلانات Google AdSense نشط:</strong> تظهر الآن جميع الوحدات الإعلانية مع حساب الـ RPM المتوقع، معدلات النقر (CTR)، وشروط الأمان وتوافق السياسات.
+              نمط المخطط الإعلاني نشط: جميع الوحدات الإعلانية متوافقة مع حساب Google AdSense وتزيد أرباحك (RPM).
             </span>
           </div>
           <button
             onClick={() => setBlueprintMode(false)}
             className="text-white hover:text-amber-200 cursor-pointer font-bold mr-4"
           >
-            ✕ إغلاق
+            إغلاق ×
           </button>
         </div>
       )}
 
-      {/* Floating / Inline Quick Theme Palette Switcher */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-2xl shadow-xs">
           <Palette className="w-3.5 h-3.5 text-slate-400" />
@@ -245,23 +241,19 @@ export default function App() {
             className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline mr-2 cursor-pointer"
             style={{ color: accentColor }}
           >
-            المزيد +
+            + المزيد
           </button>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>السمة المطبقة: <strong>{customAccent ? `مخصص (${customAccent})` : currentTheme.nameAr}</strong></span>
+          <span>السمة النشطة: <strong>{customAccent ? `مخصص (${customAccent})` : currentTheme.nameAr}</strong></span>
         </div>
       </div>
 
-      {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-3 space-y-8">
-        
-        {/* VIEW 1: SPEED TEST MAIN VIEW */}
         {currentView === 'test' && (
           <div className="space-y-8">
-            {/* Top Responsive Ad Unit (728x90) */}
             <div className="w-full max-w-4xl mx-auto">
               <AdSenseBanner
                 unit={topAdUnit}
@@ -269,7 +261,6 @@ export default function App() {
               />
             </div>
 
-            {/* Main Speedometer Section */}
             <section id="speedometer-section" className="w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
               <Speedometer
                 phase={phase}
@@ -284,49 +275,46 @@ export default function App() {
                 currentTheme={currentTheme}
                 customAccent={customAccent}
               />
-
-              {/* High Viewability Under-Speedometer Ad Slot (336x280) */}
-              <div className="w-full max-w-lg mx-auto mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/80">
-                <AdSenseBanner
-                  unit={underGaugeAdUnit}
-                  blueprintMode={blueprintMode}
-                />
-              </div>
-
-              {/* Action Bar when test completes: Certificate & Details & Gemini AI */}
-              {phase === 'complete' && lastResult && (
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in">
-                  <button
-                    id="btn-open-ai-analysis-completed"
-                    onClick={() => setIsAIDiagnosticsOpen(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
-                  >
-                    <Circle className="w-4 h-4 text-amber-300 animate-pulse" />
-                    <span>تحليل الخط بالذكاء الاصطناعي (Gemini)</span>
-                  </button>
-
-                  <button
-                    id="btn-open-certificate"
-                    onClick={() => setShowCertificate(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
-                  >
-                    <Award className="w-4 h-4" />
-                    <span>عرض ومشاركة بطاقة السرعة (Speed Certificate)</span>
-                  </button>
-
-                  <button
-                    id="btn-jump-to-dwell"
-                    onClick={() => setCurrentView('dwell')}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs hover:bg-black transition cursor-pointer"
-                  >
-                    <Gamepad2 className="w-4 h-4 text-cyan-400" />
-                    <span>فحص توافق خطك لألعاب ببجي وفيفا و 4K</span>
-                  </button>
-                </div>
-              )}
             </section>
 
-            {/* Native In-Feed Recommendation Ad (Between Speedometer & Dwell Tools) */}
+            <div className="w-full max-w-4xl mx-auto mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/80">
+              <AdSenseBanner
+                unit={underGaugeAdUnit}
+                blueprintMode={blueprintMode}
+              />
+            </div>
+
+            {phase === 'complete' && lastResult && (
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in">
+                <button
+                  id="btn-open-ai-analysis-completed"
+                  onClick={() => setIsAIDiagnosticsOpen(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
+                >
+                  <Circle className="w-4 h-4 text-amber-300 animate-pulse" />
+                  <span>تحليل الخط بالذكاء الاصطناعي (Gemini)</span>
+                </button>
+
+                <button
+                  id="btn-open-certificate"
+                  onClick={() => setShowCertificate(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold text-xs shadow-md hover:scale-105 transition cursor-pointer"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>عرض ومشاركة بطاقة السرعة (Speed Certificate)</span>
+                </button>
+
+                <button
+                  id="btn-jump-to-dwell"
+                  onClick={() => setCurrentView('dwell')}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs hover:bg-black transition cursor-pointer"
+                >
+                  <Gamepad2 className="w-4 h-4 text-cyan-400" />
+                  <span>فحص توافق خطك لألعاب الفايبر والـ 4G</span>
+                </button>
+              </div>
+            )}
+
             <div className="w-full max-w-4xl mx-auto">
               <AdSenseBanner
                 unit={nativeInFeedAdUnit}
@@ -334,12 +322,10 @@ export default function App() {
               />
             </div>
 
-            {/* Quick Engagement Dwell Time Section */}
             <section className="w-full max-w-4xl mx-auto space-y-4">
               <DwellTimeTools stats={stats} />
             </section>
 
-            {/* Test History Drawer / Table */}
             {testHistory.length > 0 && (
               <section className="w-full max-w-4xl mx-auto p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
@@ -349,7 +335,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={clearHistory}
-                    className="flex items-center gap-1 text-[11px] text-red-500 hover:text-red-700 cursor-pointer font-semibold"
+                    className="flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 font-semibold"
                   >
                     <Trash2 className="w-3 h-3" /> مسح السجل
                   </button>
@@ -362,7 +348,7 @@ export default function App() {
                         <th className="py-2 pr-2 font-medium">الوقت</th>
                         <th className="py-2 font-medium">التنزيل</th>
                         <th className="py-2 font-medium">الرفع</th>
-                        <th className="py-2 font-medium">البينج</th>
+                        <th className="py-2 font-medium">البنج</th>
                         <th className="py-2 font-medium">التقييم</th>
                         <th className="py-2 font-medium">المزود</th>
                       </tr>
@@ -386,37 +372,31 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 2: DWELL TIME & ENGAGEMENT TOOLS */}
         {currentView === 'dwell' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <DwellTimeTools stats={stats} />
           </div>
         )}
 
-        {/* VIEW 3: ADSENSE STRATEGY & BLUEPRINT */}
         {currentView === 'adsense' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <AdSenseBlueprint />
           </div>
         )}
 
-        {/* VIEW 4: SEO LANDING PAGES */}
         {currentView === 'seo' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <SEOLandingPages />
           </div>
         )}
 
-        {/* VIEW 5: TECHNICAL & COMMERCIAL FEASIBILITY STUDY */}
         {currentView === 'study' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <TechnicalFeasibilityStudy />
           </div>
         )}
-
       </main>
 
-      {/* Speed Certificate Modal */}
       {showCertificate && lastResult && (
         <SpeedCertificate
           result={lastResult}
@@ -424,7 +404,6 @@ export default function App() {
         />
       )}
 
-      {/* Theme Picker Modal */}
       <ThemePickerModal
         currentThemeId={themeId}
         onSelectTheme={handleSelectTheme}
@@ -436,7 +415,6 @@ export default function App() {
         onClose={() => setIsThemeModalOpen(false)}
       />
 
-      {/* AI Network Diagnostics Modal (Gemini 3.7) */}
       <AIDiagnosticModal
         isOpen={isAIDiagnosticsOpen}
         onClose={() => setIsAIDiagnosticsOpen(false)}
@@ -445,7 +423,6 @@ export default function App() {
         accentColor={accentColor}
       />
 
-      {/* Compliant Sticky Anchor Ad Container */}
       {stickyAdVisible && (
         <aside
           id="sticky-adsense-anchor"
@@ -459,7 +436,7 @@ export default function App() {
             </div>
             <div className="flex items-center justify-center h-10 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300">
               <Circle className="w-3.5 h-3.5 text-cyan-500 ml-1.5" />
-              <span>مساحة إعلانات جوجل أدسنس السفلية المتجاوبة (Anchor Unit)</span>
+              <span>مساحة إعلانات جوجل أدسينس السفلية الاستجابة (Anchor Unit)</span>
             </div>
           </div>
           <button
@@ -467,13 +444,10 @@ export default function App() {
             aria-label="إغلاق الإعلان"
             className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1 cursor-pointer"
           >
-            ✕
+            ×
           </button>
         </aside>
       )}
-
-      {/* Global Footer */}
-      <Footer onSelectView={setCurrentView} />
     </div>
   );
 }
